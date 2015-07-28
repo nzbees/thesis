@@ -1,0 +1,16 @@
+\begingroup 
+
+    \refstepcounter{dummy}
+    \pdfbookmark[1]{Glossary}{glossary}
+    \markboth{\spacedlowsmallcaps{Glossary}}{\spacedlowsmallcaps{glossary}}
+
+%Glossary
+\chapter{Glossary}\label{sec:Glossary}
+	\begin{acronym}[111111111111] 
+	\acro{Erode}{Shrinks the image, holes became larger and deletes small details.}
+	\acro{Dilate}{Enlarges object borders so holes become smaller.}
+	\acro{Open}{Erode + Dilate, smooths objects contours, removes isolated elements and breaks thin connections.}
+	\acro{Close}{Dilate + Erode, smooths objects contours, fill small holes and joins breaks.}
+	\end{acronym}
+
+\endgroup

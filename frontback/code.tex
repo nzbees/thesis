@@ -1,0 +1,684 @@
+\chapter{Code}\label{sec:code} 
+
+\begin{lstlisting}[language=java, caption=Saturated pixels examples., label=cd:pre-process-sp]
+//Contrast enhancement by saturated pixels
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/enhance_contrast/raw/"; //source and output dir
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/enhance_contrast/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/enhance_contrast/stack/";
+pre_process="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/enhance_contrast/pre_process/";
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/enhance_contrast/montage/";
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/"; //for publishing images
+setBatchMode(true);
+//open image and saturate pixels by 0.4, 40 and 90%
+open(raw + "sc.tif");//scheme A
+	//makeRectangle(154, 85, 30, 30);
+	run("Enhance Contrast...", "saturated=0.4 update");
+		saveAs("TIFF", slice +"s1.tif");
+open(raw + "sc.tif");//scheme B
+	//makeRectangle(154, 85, 30, 30);
+	run("Enhance Contrast...", "saturated=40 update");
+		saveAs("TIFF", slice +"s2.tif");
+open(raw + "sc.tif");//scheme C
+	//makeRectangle(154, 85, 30, 30);
+	run("Enhance Contrast...", "saturated=90 update");
+		saveAs("TIFF", slice +"s3.tif"); 
+	run("Collect Garbage");
+//open adjusted images, measure histogram and save
+open(slice +"s1.tif");makeRectangle(0, 0, 400, 400);	
+	run("Histogram", "stack"); run("Canvas Size...", "width=400 height=400 position=Center zero");
+			saveAs("TIFF", slice + "s4 hist.tif"); 
+open(slice +"s2.tif");makeRectangle(0, 0, 400, 400);
+	run("Histogram", "stack"); run("Canvas Size...", "width=400 height=400 position=Center zero");
+			saveAs("TIFF", slice + "s5 hist.tif");	
+open(slice +"s3.tif");makeRectangle(0, 0, 400, 400);
+	run("Histogram", "stack"); run("Canvas Size...", "width=400 height=400 position=Center zero");
+			saveAs("TIFF", slice + "s6 hist.tif"); 			
+setBatchMode(true);//do not display images
+	run("Image Sequence...", "open=/home/n/ALHimgdata/300_documents/ch3_imgs/tests/enhance_contrast/slice/0_0hist.tif sort");
+		saveAs("Tiff", stack + "ecs.tif");	
+open(stack + "ecs.tif");
+	run("Make Montage...", "columns=3 rows=2 scale=0.80 first=1 last=6 increment=1 border=4 font=20 label use");
+		saveAs("Tiff", montage + "1ms.tif"); saveAs("PNG", docf + "mec.png");
+setBatchMode(false);run("Close All");//end
+\end{lstlisting}
+
+\begin{lstlisting}[language=java, caption=Stack pre-processing examples.,  label=cd:pre-process-stacks]
+//Contrast enhancement for image stacks
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/pre_processing/raw/"; //source and output dir
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/pre_processing/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/pre_processing/stack/";
+pre_process="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/pre_processing/pre_process/";
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/pre_processing/montage/";
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/"; //for publishing images
+setBatchMode(true);
+//open image and apply contrast using 5 schemes
+open(stack + "sc.tif");	
+		saveAs("TIFF", stack + "0_sec.tif"); //raw stack
+open(stack + "sc.tif");//scheme 1
+	run("Enhance Contrast...", "saturated=35");
+		saveAs("TIFF", stack + "1_sec.tif"); 
+open(stack + "sc.tif");//scheme 2
+	run("Enhance Contrast...", "saturated=35 equalize process_all");
+		saveAs("TIFF", stack +"2_sec.tif");
+open(stack + "sc.tif");//scheme 3 //***USED
+	run("Enhance Contrast...", "saturated=0.4 process_all");
+		saveAs("TIFF", stack +"3_sec.tif");
+open(stack + "sc.tif");//scheme 4
+	run("Enhance Contrast...", "saturated=35 process_all use");
+		saveAs("TIFF", stack +"4_sec.tif");
+open(stack + "sc.tif");//scheme 5
+	run("Enhance Contrast...", "saturated=35 equalize process_all use");
+		saveAs("TIFF", stack +"5_sec.tif");
+//open processed stacks and make montage
+open(stack + "0_sec.tif"); //original unchanged
+	run("Make Montage...", "columns=2 rows=2 scale=0.50 first=1 last=7 increment=2 border=4 font=20 label use"); 
+		saveAs("TIFF", slice + "0_mscec.tif"); //
+open(stack + "1_sec.tif");//scheme 1
+	run("Make Montage...", "columns=2 rows=2 scale=0.50 first=1 last=7 increment=2 border=4 font=20 label use"); 
+		saveAs("TIFF", slice + "1_mscec.tif"); 
+open(stack + "2_sec.tif");//scheme 2
+	run("Make Montage...", "columns=2 rows=2 scale=0.50 first=1 last=7 increment=2 border=4 font=20 label use"); 
+		saveAs("TIFF", slice +"2_mscec.tif");
+open(stack + "3_sec.tif");//scheme 3 //***
+	run("Make Montage...", "columns=2 rows=2 scale=0.50 first=1 last=7 increment=2 border=4 font=20 label use"); 
+		saveAs("TIFF", slice +"3_mscec.tif");
+open(stack + "4_sec.tif");//scheme 4
+	run("Make Montage...", "columns=2 rows=2 scale=0.50 first=1 last=7 increment=2 border=4 font=20 label use"); 
+		saveAs("TIFF", slice +"4_mscec.tif");
+open(stack + "5_sec.tif");//scheme 5
+	run("Make Montage...", "columns=2 rows=2 scale=0.50 first=1 last=7 increment=2 border=4 font=20 label"); 
+		saveAs("TIFF", slice +"5_mscec.tif");
+//open processed stacks and measure histograms
+open(stack + "0_sec.tif"); //original unchanged
+	run("Histogram", "stack"); run("Canvas Size...", "width=402 height=402 position=Center zero");
+		saveAs("TIFF", slice + "0_hist.tif"); 
+open(stack + "1_sec.tif");
+	run("Histogram", "stack"); run("Canvas Size...", "width=402 height=402  position=Center zero");
+		saveAs("TIFF", slice + "1_hist.tif");
+open(stack +"2_sec.tif");
+	run("Histogram", "stack"); run("Canvas Size...", "width=402 height=402  position=Center zero");
+		saveAs("TIFF", slice + "2_hist.tif");
+open(stack +"3_sec.tif");
+	run("Histogram", "stack"); run("Canvas Size...", "width=402 height=402  position=Center zero");
+		saveAs("TIFF", slice + "3_hist.tif");
+open(stack +"4_sec.tif");	
+	run("Histogram", "stack"); run("Canvas Size...", "width=402 height=402  position=Center zero");
+		saveAs("TIFF", slice + "4_hist.tif");
+open(stack+"5_sec.tif");
+	run("Histogram", "stack"); run("Canvas Size...", "width=402 height=402  position=Center zero");
+		saveAs("TIFF", slice + "5_hist.tif"); run("Collect Garbage");
+//collate image stack and stack montage 
+	run("Image Sequence...", "open=/home/n/ALHimgdata/300_documents/ch3_imgs/tests/pre_processing/slice/0_sec.tif sort");
+		saveAs("Tiff", stack + "scec.tif");	
+open(stack + "scec.tif");
+	run("Make Montage...", "columns=4 rows=3 scale=0.80 first=1 last=12 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "1mscec.tif"); saveAs("PNG", docf + "mscec.png");
+setBatchMode(false);run("Close All");//end
+\end{lstlisting}
+
+\begin{lstlisting}[language=java, caption=Thresholding tests., label=cd:tryall-threshold]
+//Try all thresholds (16 methods)
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/tryall/raw/"; //source and output dir
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/tryall/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/tryall/stack/";
+pre_process="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/tryall/pre_process/";
+logf="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/tryall/log/"; 
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/tryall/montage/";
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/"; //for publishing images
+//open single raw image and pre-process
+setBatchMode(true);
+open(raw + "5.tif");//enhance contrast
+	run("Enhance Contrast...", "saturated=0.4 update");
+		saveAs("TIFF", slice +"ec5.tif");
+open(slice +"ec5.tif");//convert to 8 bit
+	run("8-bit"); 
+		saveAs("TIFF", slice +"gec5.tif");
+open(slice +"gec5.tif");//Try all thresholds (16 methods)	
+	run("Auto Threshold", "method=[Try all] white show");
+		saveAs("TIFF", slice +"mgec5.tif"); saveAs("PNG", docf +"mgec5.tif");
+selectWindow("Log"); 
+	saveAs("Text", logf + "Log-tryall.txt");
+setBatchMode(false);run("Close All");//end
+\end{lstlisting}
+
+\begin{lstlisting}[language=java, caption=Thresholding by six common methods., label=cd:threshold-six-post]
+/Automatic thresholding on an image of a horizontal ground nest by six schemes,
+//including some typical post processing operation examples. 
+//Started t.ijm at Fri Jun 05 16:56:46 NZST 2015 
+//Started t.ijm at Fri Jun 05 16:56:56 NZST 2015
+//Process completed in 10 seconds.
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/t_six/raw/"; 
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/t_six/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/t_six/stack/"; 
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/t_six/montage/"; 
+post_process="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/t_six/post_process/"; 
+logf="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/t_six/log/"; 
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/"; //for publishing images
+setBatchMode(true);//do not display images
+//open and apply automatic threshold method
+open(raw + "5-gs.tif");
+	run("Auto Threshold", "method=Default show");
+		saveAs("Tiff", slice + "1_Default.tif");
+open(raw + "5-gs.tif");
+	run("Auto Threshold", "method=Huang show");
+		saveAs("Tiff", slice + "2_Huang.tif"); 
+open(raw + "5-gs.tif");
+	run("Auto Threshold", "method=Mean show");
+		saveAs("Tiff", slice + "3_Mean.tif");
+open(raw + "5-gs.tif");
+	run("Auto Threshold", "method=MinError(I) show");
+		saveAs("Tiff", slice + "4_MinError.tif");
+open(raw + "5-gs.tif");
+	run("Auto Threshold", "method=Minimum show");
+		saveAs("Tiff", slice + "5_Minimum.tif"); 
+open(raw + "5-gs.tif");
+	run("Auto Threshold", "method=Otsu show");
+		saveAs("Tiff", slice + "6_Otsu.tif");  
+selectWindow("Log"); 
+	saveAs("Text", logf + "Log-thresh-six.txt");
+//post-process binary results
+run("Image Sequence...", "open=/home/n/ALHimgdata/300_documents/ch3_imgs/tests/t_six/slice/1-Default.tif sort");
+	saveAs("Tiff", stack + "t-six.tif");
+open(stack + "t-six.tif");
+	run("Options...", "iterations=2 count=2 do=Open stack");//open operator
+		saveAs("Tiff", post_process + "t-open-22.tif");
+open(post_process + "t-open-22.tif");		
+	run("Options...", "iterations=1 count=1 do=[Fill Holes] stack");//fill holes
+		saveAs("Tiff", post_process + "t-fh.tif");
+open(post_process + "t-fh.tif");	
+	run("Options...", "iterations=2 count=4 pad do=Close stack");//close operator
+		saveAs("Tiff", post_process + "t-close-24.tif");
+open(post_process + "t-close-24.tif");	
+	run("Analyze Particles...", "size=500-50000 circularity=0.1-0.9 show=Outlines display clear summarize in_situ stack");//particle count
+		saveAs("Tiff", post_process + "t-cb.tif");
+selectWindow("Summary of t-close-24.tif");//save count summary
+	saveAs("Text", post_process + "t-cb.txt");
+run("Close All");
+//make stack montage and save results
+open(stack + "t-six.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "1mt-six.tif");saveAs("PNG", docf + "1mt.png");
+open(post_process + "t-open-22.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "2mt-open-22.tif");saveAs("PNG", docf + "2mt.png");
+open(post_process + "t-fh.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "3mt-fh.tif");saveAs("PNG", docf + "3mt.png");
+open(post_process + "t-close-24.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "4mt-close-24.tif");saveAs("PNG", docf + "4mt.png");
+open(post_process + "t-cb.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "5mt-cb.tif");saveAs("PNG", docf + "5mt.png");
+setBatchMode(false);run("Close All");//end
+\end{lstlisting}
+
+\begin{lstlisting}[language=java, caption=Otsu thresholding on variable nest images., label=cd:threshold-variable-post]
+//Binirization tests on representative sample images of active nests.
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/challenge/raw/"; 
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/challenge/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/challenge/stack/"; 
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/challenge/montage/"; 
+post_process="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/challenge/post_process/"; 
+logf="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/challenge/log/"; 
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/";
+setBatchMode(true);//do not display images
+//open and process stack
+open(stack + "c.tif"); //convert to 8 bit
+	run("8-bit");
+		saveAs("Tiff", stack + "8bit.tif"); 
+open(stack + "8bit.tif"); //threshold by Otsu method
+	run("Auto Threshold", "method=Otsu stack");
+		saveAs("Tiff", stack + "otsu.tif"); 
+open(stack + "otsu.tif");//open operator
+	run("Options...", "iterations=2 count=2 do=Open stack");
+		saveAs("Tiff", stack + "open-11.tif");
+open(stack + "open-11.tif"); //fill holes operator
+	run("Options...", "iterations=1 count=1 do=[Fill Holes] stack");
+		saveAs("Tiff", stack + "fh.tif");
+open(stack + "fh.tif");//close operator
+	run("Options...", "iterations=2 count=4 pad do=Close stack");
+		saveAs("Tiff", stack + "close-43.tif");
+open(stack + "close-43.tif");//particle count
+	run("Analyze Particles...", "size=500-50000 circularity=0.1-0.9 show=Outlines display clear summarize in_situ stack");
+		saveAs("Tiff", stack + "cb.tif");
+selectWindow("Summary of close-43.tif");//save count summary
+		saveAs("Text", stack + "cp.txt");
+//make stack montage and save results
+open(stack + "c.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mc.tif"); saveAs("PNG", docf + "0mc.png");
+open(stack + "8bit.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "m8bit.tif"); saveAs("PNG", docf + "1mc.png");
+open(stack + "otsu.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "otsu.tif");saveAs("PNG", docf + "2mc.png");
+open(stack + "open-11.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mopen-11.tif");saveAs("PNG", docf + "3mc.png");
+open(stack + "fh.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mcfh.tif");saveAs("PNG", docf + "4mc.png");
+open(stack + "close-43.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mclose-43.tif");saveAs("PNG", docf + "5mc.png");
+open(stack + "cb.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mccb.tif"); saveAs("PNG", docf + "6mc.png");
+		setBatchMode(false); run("Close All"); //end
+\end{lstlisting}
+
+\begin{lstlisting}[language=java, caption=Segmentation by edge detection., label=cd:segment-edge]
+//Edge detection by Canny-Deriche filtering
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/edge/raw/";//home dir 
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/edge/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/edge/stack/"; 
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/edge/montage/"; 
+post_process="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/edge/post_process/"; 
+logf = "/home/n/ALHimgdata/300_documents/ch3_imgs/tests/edge/log/"; 
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/"; //for publishing images
+//open and apply edge detection with different smoothing values
+open(raw + "5-gs.tif");
+	run("Deriche...", "alpha=1.0");run("8-bit");
+		saveAs("Tiff", slice + "1.tif");
+open(raw + "5-gs.tif");
+	run("Deriche...", "alpha=0.9");run("8-bit");
+		saveAs("Tiff", slice + "2.tif");
+open(raw + "5-gs.tif");
+	run("Deriche...", "alpha=0.75");run("8-bit");
+		saveAs("Tiff", slice + "3.tif");
+open(raw + "5-gs.tif");
+	run("Deriche...", "alpha=0.6");run("8-bit");
+		saveAs("Tiff", slice + "4.tif"); 
+open(raw + "5-gs.tif");
+	run("Deriche...", "alpha=0.45");run("8-bit");
+		saveAs("Tiff", slice + "5.tif");
+open(raw + "5-gs.tif");
+	run("Deriche...", "alpha=0.15");run("8-bit");
+		saveAs("Tiff", slice + "6.tif"); 
+run("Close All");
+//post-process binary results
+run("Image Sequence...", "open=/home/n/ALHimgdata/300_documents/ch3_imgs/tests/edge/slice/1.tif sort");
+		saveAs("Tiff", stack + "edge.tif");
+open(stack + "edge.tif");
+	run("Find Edges", "stack"); //run global find edges plugin over entire image stack
+    	saveAs("Tiff", stack + "fe.tif");
+open(stack + "fe.tif");
+	run("Make Binary", "method=Minimum background=Default calculate list"); //invert binary 
+    	saveAs("Tiff", stack + "min.tif");
+open(stack + "min.tif");
+	run("Options...", "iterations=3 count=3 do=Close stack");//close operator
+		saveAs("Tiff", stack + "close-33.tif");
+selectWindow("close-33.tif");
+	run("Options...", "iterations=1 count=1 do=[Fill Holes] stack");//fill holes
+		saveAs("Tiff", stack + "fh.tif");
+selectWindow("fh.tif");
+	run("Options...", "iterations=4 count=3 do=Open stack");//open operator
+		saveAs("Tiff", stack + "open-43.tif");
+selectWindow("open-43.tif");
+	run("Analyze Particles...", "size=1000-50000 circularity=0.1-0.9 show=Outlines display clear summarize in_situ stack"); //particle count
+		saveAs("Tiff", stack + "cb.tif");
+selectWindow("Summary of open-43.tif"); 
+	saveAs("Text", logf + "cb.txt"); //save count summary
+run("Close All");
+//make stack montage and save results
+setBatchMode(true);//do not display images
+open(stack + "fe.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.8 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "fe.tif");saveAs("PNG", docf + "1medge.png");
+open(stack + "min.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.8 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "min.tif");saveAs("PNG", docf + "2medge-b.png");
+open(post_process + "close-33.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.8 first=1 last=6 increment=1 border=4 font=20 label use");
+		saveAs("Tiff", montage + "close-33.tif");saveAs("Tiff", docf + "3medge-close.png");
+open(post_process + "fh.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.8 first=1 last=6 increment=1 border=4 font=20 label use");
+		saveAs("Tiff", montage + "fh.tif");saveAs("PNG", docf + "4medge-fh.png");
+open(post_process + "open-43.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.8 first=1 last=6 increment=1 border=4 font=20 label use");
+		saveAs("Tiff", montage + "open-43.tif");saveAs("PNG", docf + "5medge-open.png");
+open(post_process + "cb.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.8 first=1 last=6 increment=1 border=4 font=20 label use");
+		saveAs("Tiff", montage + "cb.tif");saveAs("PNG", docf + "6medge-cb.png");
+		setBatchMode(false);run("Close All");//end
+		\end{lstlisting}
+
+\begin{lstlisting}[language=java, caption=Segmentation by region merging., label=cd:segment-srm]
+//Statistical region merging (srm)
+//Started srr.ijm at Sat Jun 06 20:05:38 NZST 2015
+//Started srm.ijm at Sat Jun 06 20:05:49 NZST 2015
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm/raw/";//home dir 
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm/stack/"; 
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm/montage/"; 
+logf = "/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm/log/"; 
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/"; //for publishing images
+//open and run srm with varying Q
+open(raw + "5-gs.tif");
+	run("Statistical Region Merging", "q=1 showaverages");
+		saveAs("Tiff", slice + "1.tif");
+open(raw + "5-gs.tif");
+	run("Statistical Region Merging", "q=2 showaverages");
+		saveAs("Tiff", slice + "2.tif");
+open(raw + "5-gs.tif");
+	run("Statistical Region Merging", "q=3 showaverages");
+		saveAs("Tiff", slice + "3.tif");
+open(raw + "5-gs.tif");
+	run("Statistical Region Merging", "q=6 showaverages");
+		saveAs("Tiff", slice + "4.tif"); 
+open(raw + "5-gs.tif");
+	run("Statistical Region Merging", "q=8 showaverages");
+		saveAs("Tiff", slice + "5.tif");
+open(raw + "5-gs.tif");
+	run("Statistical Region Merging", "q=16 showaverages");
+		saveAs("Tiff", slice + "6.tif"); 
+run("Close All");
+//post-process binary results
+run("Image Sequence...", "open=/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm/slice/1.tif sort");
+		saveAs("Tiff", stack + "srm.tif");
+open(stack + "srm.tif");
+	run("8-bit"); 
+	 run("Make Binary", "Minimum background=Default"); //invert binary 
+    	saveAs("Tiff", stack + "min.tif");
+open(stack + "min.tif");
+	run("Options...", "iterations=1 count=1 do=Open stack");//open operator
+		saveAs("Tiff", stack + "open-11.tif");
+selectWindow("open-11.tif");
+	run("Options...", "iterations=1 count=1 do=[Fill Holes] stack");//fill holes
+		saveAs("Tiff", stack+ "fh.tif");
+selectWindow("fh.tif");
+	run("Options...", "iterations=1 count=1 pad do=Close stack");//close operator
+		saveAs("Tiff", stack + "close-11.tif");
+selectWindow("close-11.tif");
+	run("Analyze Particles...", "size=1000-50000 circularity=0.1-0.9 show=Outlines display clear summarize in_situ stack"); //particle count
+		saveAs("Tiff", stack + "cb.tif");
+selectWindow("Summary of close-11.tif"); 
+	saveAs("Text", logf + "srm-cb.txt"); //save count summary
+//make stack montage and save results
+setBatchMode(true);//do not display images
+open(stack + "srm.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "srm.tif");saveAs("PNG", docf + "1msrm.png");
+open(stack + "min.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "min.tif");saveAs("PNG", docf + "2msrm.png");
+open(stack + "open-11.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "open.tif");saveAs("PNG", docf + "3msrm.png");
+open(stack + "fh.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "fh.tif");saveAs("PNG", docf + "4msrm.png");
+open(stack + "close-11.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "close.tif");saveAs("PNG", docf + "5msrm.png");
+open(stack + "cb.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "cb.tif");saveAs("PNG", docf + "6msrm.png");
+setBatchMode(false);run("Close All");//end
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=java, caption=Region merging on variable nest images.., label=cd:threshold-variable-srm]
+//Statistical region merging on represntative sample images
+//Started srm_all.ijm at Sun Jun 07 14:56:55 NZST 2015
+//Started srm_all.ijm at Sun Jun 07 14:57:02 NZST 2015
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm_all/raw/";//home dir 
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm_all/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm_all/stack/"; 
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm_all/montage/"; 
+logf = "/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm_all/log/"; 
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/"; //for publishing images
+setBatchMode(true);//do not display images
+//open and run srm on representative images
+open(raw + "1.tif");
+	run("Statistical Region Merging", "q=16 showaverages");
+		saveAs("Tiff", slice + "1.tif");
+open(raw + "2.tif");
+	run("Statistical Region Merging", "q=16 showaverages");
+		saveAs("Tiff", slice + "2.tif");
+open(raw + "3.tif");
+	run("Statistical Region Merging", "q=16 showaverages");
+		saveAs("Tiff", slice + "3.tif");
+open(raw + "4.tif");
+	run("Statistical Region Merging", "q=16 showaverages");
+		saveAs("Tiff", slice + "4.tif"); 
+open(raw + "5.tif");
+	run("Statistical Region Merging", "q=16 showaverages");
+		saveAs("Tiff", slice + "5.tif");
+open(raw + "6.tif");
+	run("Statistical Region Merging", "q=16 showaverages");
+		saveAs("Tiff", slice + "6.tif"); 
+run("Close All");
+//post-process binary results
+run("Image Sequence...", "open=/home/n/ALHimgdata/300_documents/ch3_imgs/tests/srm_all/slice/1.tif sort");
+		saveAs("Tiff", stack + "srm_all.tif");
+open(stack + "srm_all.tif");
+	run("8-bit"); 
+	 run("Make Binary", "Minimum background=Default"); //invert binary 
+    	saveAs("Tiff", stack + "min_all.tif");
+open(stack + "min_all.tif");
+	run("Options...", "iterations=2 count=2 do=Open stack");//open operator
+		saveAs("Tiff", stack + "open-22_all.tif");
+open(stack + "open-22_all.tif");
+	run("Options...", "iterations=1 count=1 do=[Fill Holes] stack");//fill holes
+		saveAs("Tiff", stack+ "fh_all.tif");
+open(stack + "fh_all.tif");
+	run("Options...", "iterations=2 count=4 pad do=Close stack");//close operator
+		saveAs("Tiff", stack + "close-24_all.tif");
+open(stack + "close-24_all.tif");
+	run("Analyze Particles...", "size=100-50000 circularity=0.1-0.9 show=Outlines display clear summarize in_situ stack"); //particle count
+		saveAs("Tiff", stack + "cb_all.tif");
+//make stack montage and save results
+open(stack + "srm_all.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "srm_all.tif");saveAs("PNG", docf + "1msrmall.png");
+open(stack + "min_all.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "min.tif");saveAs("PNG", docf + "2msrmall.png");
+open(stack + "open-22_all.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "open.tif");saveAs("PNG", docf + "3msrmall.png");
+open(stack + "fh_all.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "fh.tif");saveAs("PNG", docf + "4msrmall.png");
+open(stack + "close-24_all.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "close.tif");saveAs("PNG", docf + "5msrmall.png");
+open(stack + "cb_all.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.80 first=1 last=6 increment=1 border=4 font=30 label");
+		saveAs("Tiff", montage + "cb.tif");saveAs("PNG", docf + "6msrmall.png");
+setBatchMode(false);run("Close All");//end
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=java, caption=Trainable segmentation on variable nest images., label=cd:threshold-variable-rf]
+//RF tests on representative sample images of active nests.
+//Started r.ijm at Sat Jun 06 19:13:54 NZST 2015
+//Started r.ijm at Sat Jun 06 19:14:28 NZST 2015
+raw="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/rf/raw/"; 
+slice="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/rf/slice/"; 
+stack="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/rf/stack/"; 
+montage="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/rf/montage/"; 
+post_process="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/rf/post_process/"; 
+logf="/home/n/ALHimgdata/300_documents/ch3_imgs/tests/rf/log/"; 
+docf= "/home/n/ALHimgdata/301_thesis/thesis/gfx/chp3/";
+//open and process stack
+open(stack + "c.tif"); 
+run("Trainable Weka Segmentation");wait(2000);
+//select foreground active nest pixels Class 1
+makeOval(203, 376, 4, 6);call("trainableSegmentation.Weka_Segmentation.addTrace", "0", "1");
+makeOval(220, 353, 5, 5);call("trainableSegmentation.Weka_Segmentation.addTrace", "0", "2");
+makeOval(86, 268, 4, 5);call("trainableSegmentation.Weka_Segmentation.addTrace", "0", "3");
+makeOval(139, 337, 17, 7);call("trainableSegmentation.Weka_Segmentation.addTrace", "0", "4");
+makeOval(210, 109, 12, 4);call("trainableSegmentation.Weka_Segmentation.addTrace", "0", "4");
+makeOval(254, 146, 6, 10);call("trainableSegmentation.Weka_Segmentation.addTrace", "0", "5");
+makeOval(287, 192, 9, 4);call("trainableSegmentation.Weka_Segmentation.addTrace", "0", "6");
+//select background pixels Class 2
+makeRectangle(15, 267, 47, 2);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "1");
+makeRectangle(98, 85, 2, 18);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "1");
+makeRectangle(91, 232, 3, 22);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "1");
+makeRectangle(44, 354, 4, 15);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "2");
+makeRectangle(12, 162, 5, 6);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "3");
+makeRectangle(267, 268, 6, 5);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "5");
+makeRectangle(99, 105, 2, 17);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "5");
+makeRectangle(85, 134, 5, 14);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "6");
+makeRectangle(216, 276, 2, 19);call("trainableSegmentation.Weka_Segmentation.addTrace", "1", "6");
+//select RF training parameters and filters for features stack.
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Hessian=false");
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Sobel_filter=false");
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Difference_of_gaussians=false");
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Membrane_projections=false");
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Mean=true");
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Minimum=true");
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Median=true");
+call("trainableSegmentation.Weka_Segmentation.setFeature", "Structure=true");
+call("trainableSegmentation.Weka_Segmentation.setMaximumSigma", "2.0");
+call("trainableSegmentation.Weka_Segmentation.setMembranePatchSize", "1");
+call("trainableSegmentation.Weka_Segmentation.setClassifier", "hr.irb.fastRandomForest.FastRandomForest", "-I 50 -K 2 -S -5571395");
+//train classifier and save data
+call("trainableSegmentation.Weka_Segmentation.trainClassifier");//train classifier
+call("trainableSegmentation.Weka_Segmentation.saveClassifier", logf + "rf.model");//save classifier 
+call("trainableSegmentation.Weka_Segmentation.saveData",  logf + "rf.arff");//save data 
+call("trainableSegmentation.Weka_Segmentation.getResult"); 
+	saveAs("Tiff", stack + "rf.tif");
+selectWindow("Log");saveAs("Text", logf +"rf.txt");//save log 
+//post process
+run("Collect Garbage"); setBatchMode(true);
+open(stack + "rf.tif"); //convert to 8 bit
+	run("8-bit");
+		saveAs("Tiff", stack + "rf8bit.tif"); 
+open(stack + "rf8bit.tif"); //threshold by Otsu method
+	run("Make Binary", "method=Otsu background=Default");
+		saveAs("Tiff", stack + "otsu.tif"); 
+open(stack + "otsu.tif");//open operator
+	run("Options...", "iterations=2 count=2 do=Open stack");
+		saveAs("Tiff", stack + "open-22.tif");
+open(stack + "open-22.tif"); //fill holes operator
+	run("Options...", "iterations=1 count=1 do=[Fill Holes] stack");
+		saveAs("Tiff", stack + "fh.tif");
+open(stack + "fh.tif");//close operator
+	run("Options...", "iterations=2 count=4 pad do=Close stack");
+		saveAs("Tiff", stack + "close-24.tif");
+open(stack + "close-24.tif");//particle count
+	run("Analyze Particles...", "size=100-50000 circularity=0.1-0.9 show=Outlines display clear summarize in_situ stack");
+		saveAs("Tiff", stack + "cb.tif");
+selectWindow("Summary of close-24.tif");//save count summary
+		saveAs("Text", stack + "cp.txt");		
+//make stack montage and save results
+open(stack + "rf.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label use");
+		saveAs("Tiff", montage + "mrf.tif"); saveAs("PNG", docf + "0mrf.png");
+open(stack + "rf8bit.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mrf8bit.tif"); saveAs("PNG", docf + "1mrf.png");
+open(stack + "otsu.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mrfotsu.tif");saveAs("PNG", docf + "2mrf.png");
+open(stack + "open-22.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mrfopen-22.tif");saveAs("PNG", docf + "3mrf.png");
+open(stack + "fh.tif"); 
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mrffh.tif");saveAs("PNG", docf + "4mrf.png");
+open(stack + "close-24.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mrfclose-24.tif");saveAs("PNG", docf + "5mrf.png");
+open(stack + "cb.tif");
+	run("Make Montage...", "columns=6 rows=1 scale=0.50 first=1 last=6 increment=1 border=4 font=20 label");
+		saveAs("Tiff", montage + "mrfcb.tif"); saveAs("PNG", docf + "6mrf.png");
+	setBatchMode(false); run("Close All");//end
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[language=R, caption=Automatic and manual concordance correlation., label=cd:acmc-concord]
+## load libraries used
+library(knitr)
+library(car)
+library(rgl, pos=13)
+library(nlme, pos=14)
+library(mgcv, pos=14)
+library(survival)
+library(epiR)
+library(methods)
+library(ggplot2)
+
+mic_mfc_ac_ob <- 
+  read.table("/home/n/ALHimgdata/201_analysis/analysis/main/r/mic_mfc_ac_ob/csv/mic_mfc_ac_ob_4R.csv", 
+             header=TRUE, sep=",", na.strings="NA", dec=".", strip.white=TRUE)
+
+## Spearman rank correlation matrix table
+m_ac <- cor(mic_mfc_ac_ob[,c("acf_t","mfc_t")], use="complete")
+kable(head(m_ac[,1:2]), format = "markdown")
+
+## Concordance correlation plot:
+ac <- mic_mfc_ac_ob[,c("acf_t")]
+mfc <- mic_mfc_ac_ob[,c("mfc_t")]
+
+acmc.ccc <- epi.ccc(mfc, ac, ci = "z-transform",conf.level = 0.95)
+rslts <- acmc.ccc$rho.c
+rslts1 <- as.data.frame(rslts, row.names = NULL, responseName = "Rho",tringsAsFactors = TRUE)
+kable(head(rslts1[,1:3]), format = "markdown")
+
+lab <- paste("CCC:  ", round(acmc.ccc$rho.c[,1], digits = 2), " (95% CI ", 
+             round(acmc.ccc$rho.c[,2], digits = 2), " - ",
+             round(acmc.ccc$rho.c[,3], digits = 2), ")", sep = "")
+z <- lm(mfc ~ ac)
+par(pty = "s")
+plot(jitter(mfc),jitter(ac), xlim = c(0, 60), ylim = c(0,80), cex=1, xlab = "Manual field counts", ylab = "Automatic counts", pch = 1)
+abline(a = 0, b = 1, lty = 2)
+abline(z, lty = 1)
+legend(x = "topleft", legend = c("Line of perfect concordance", "Reduced major axis"), lty = c(2,1), lwd = c(1,1), bty = "n")
+text(x = 15, y = 69, labels = lab)
+\end{lstlisting}
+
+\begin{lstlisting}[language=R, caption=Image counts by two observsers., label=cd:ob1ob2-concord]
+##Spearman rank correlation matrix table obs1 obs2
+##Lin's Concordance correlation 
+library(knitr)
+library(car)
+library(rgl, pos=13)
+library(nlme, pos=14)
+library(mgcv, pos=14)
+library(survival)
+library(epiR)
+library(methods)
+library(ggplot2)
+
+mic_mfc_ac_ob <- 
+  read.table("/home/n/ALHimgdata/201_analysis/analysis/r/mic_mfc_ac_ob/csv/mic_mfc_ac_ob_4R.csv", 
+             header=TRUE, sep=",", na.strings="NA", dec=".", strip.white=TRUE)
+
+## Spearman rank correlation matrix table
+
+obs <- cor(mic_mfc_ac_ob[,c("mic_ob1","mic_ob2")], use="complete")
+kable(head(obs[,1:2]), format = "markdown")
+
+
+## Spearman rank correlation
+##scatterplot(mic_ob1~mic_ob2, reg.line=lm, smooth=FALSE, spread=FALSE, boxplots=FALSE, span=0.5, jitter=list(x=1, y=1), 
+##            cex=0.5, cex.axis=1, cex.lab=1, data=mic_mfc_ac_ob)
+##par(pty = "s")
+
+## Concordance correlation plot:
+mic_ob1t <- mic_mfc_ac_ob[,c("mic_ob1")]
+mic_ob2t <- mic_mfc_ac_ob[,c("mic_ob2")]
+
+micob.ccc <- epi.ccc(mic_ob1t, mic_ob2t, ci = "z-transform",
+                     conf.level = 0.95)
+
+lab <- paste("CCC: ", round(micob.ccc$rho.c[,1], digits = 2), " (95% CI ", 
+             round(micob.ccc$rho.c[,2], digits = 2), " - ",
+             round(micob.ccc$rho.c[,3], digits = 2), ")", sep = "")
+
+z <- lm(mic_ob1t~mic_ob2t)
+par(pty = "s")
+plot(jitter(mic_ob1t),jitter(mic_ob2t), xlim = c(0, 60), ylim = c(0,80), cex=1, xlab = "Manual image counts by observer 1", ylab = "Manual image counts by observer 2", pch = 1)
+abline(a = 0, b = 1, lty = 2)
+abline(z, lty = 1)
+legend(x = "topleft", legend = c("Line of perfect concordance", 
+                                 "Reduced major axis"), lty = c(2,1), lwd = c(1,1), bty = "n")
+text(x = 14, y = 70, labels = lab)
+\end{lstlisting}
