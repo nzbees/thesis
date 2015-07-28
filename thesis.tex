@@ -1,0 +1,114 @@
+\documentclass[oneside,openright,titlepage,numbers=noenddot,headinclude,
+                footinclude=true,cleardoublepage=empty,abstractoff, 
+                BCOR=5mm,paper=a4,fontsize=11pt,%11pt,a4paper,%
+                ngerman,american,%
+                ]{scrreprt}
+                
+%Custom_config----------------------------------------------------
+% Classic thesis
+\input{thesis_config}
+\usepackage{amssymb}
+% Theorems and definitions
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{algorithm}{Algorithm}
+\usepackage{algpseudocode}
+% Shaded boxes
+\usepackage{framed}
+\newenvironment{remark}[1]{%
+  \definecolor{shadecolor}{gray}{0.9}%
+  \begin{shaded}{\color{Maroon}\noindent\textsc{#1}}\\%
+}{%
+  \end{shaded}%
+}
+% PS pictures
+\usepackage{pstricks}
+\usepackage{graphicx}
+\usepackage{psfrag}
+%\usepackage[figurewithin=none]{caption}
+% Landscape tables
+\usepackage{rotating}
+\usepackage{forest}
+\usepackage{fancybox}
+\usepackage{tikz}
+% Checkmarks
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+%\newcommand{\cmark}{\ding{51}}%
+%\newcommand{\xmark}{\ding{55}}%
+%\numberwithin{theorem}{chapter}
+%\numberwithin{definition}{chapter}
+%\numberwithin{algorithm}{chapter}
+\numberwithin{figure}{chapter}
+\numberwithin{table}{chapter}
+
+% Wide tables
+\usepackage{ltablex}
+\usepackage{longtable}
+
+% adjust colour of acronyms
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\AC@hyperlink}[2]{%
+    \begingroup
+      \hypersetup{hidelinks}%
+      \hyperlink{#1}{#2}%
+    \endgroup
+  }%
+}
+\makeatother
+
+\begin{document}
+\numberwithin{listings}{chapter} %fix up listing numbers
+\counterwithin{lstlisting}{chapter} %fix up listing numbers
+				\frenchspacing
+				\raggedbottom
+				\selectlanguage{american}
+				\pagenumbering{roman}
+				\pagestyle{plain}
+				
+				%Frontmatter------------------------------------------------------------
+				\include{frontback/titlepage}
+				\include{frontback/titleback}
+				%\cleardoublepage\include{frontback/dedication}
+				%\cleardoublepage\include{frontback/foreword}
+				\cleardoublepage\include{frontback/abstract}
+				%\cleardoublepage\include{frontback/publication}
+				\cleardoublepage\include{frontback/acknowledgments}
+				\cleardoublepage\include{frontback/declaration}
+				\pagestyle{scrheadings}
+				\cleardoublepage\include{frontback/contents}
+				%Main%--------------------------------------------------------
+				\pagenumbering{arabic}
+				\cleardoublepage
+				\include{chapters/chp1}
+				\part{Review}\label{part:1}
+				\include{chapters/chp2} \cleardoublepage %bees
+				\include{chapters/chp3} \cleardoublepage %imagea
+				\part{Methods}\label{part:2}
+				\include{chapters/chp4} \cleardoublepage %field
+				\include{chapters/chp5} \cleardoublepage %imagea
+				\part{Outcomes}\label{part:3}
+				\include{chapters/chp6} \cleardoublepage %results
+				\include{chapters/chp7} \cleardoublepage%discussion
+				\include{chapters/chp8} \cleardoublepage %conclusion
+				%%\addtocontents{toc}{\protect\vspace*{\baselineskip}\protect}
+				%\cleardoublepage
+				%\makeatletter
+				%\def\toclevel@chapter{-1}
+				%\makeatother
+				%Backmatter------------------------------------------------------------
+				\appendix
+				\cleardoublepage
+				\part{Appendix}
+				\cleardoublepage\include{frontback/acronyms}
+				\cleardoublepage\include{frontback/glossary}
+				\cleardoublepage\include{frontback/notations}
+				\cleardoublepage\include{frontback/exifdata}
+				\cleardoublepage\include{frontback/code}
+				\cleardoublepage\include{frontback/field-data}
+				\cleardoublepage\include{frontback/bibliography}
+
+\end{document}
+
+-----------------------------------------------------------------
